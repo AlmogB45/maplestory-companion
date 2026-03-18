@@ -57,6 +57,21 @@ body {
   .layout-grid {
     grid-template-columns: 1fr;
   }
+  
+  .input-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .input-group input, .select-input {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .cp-display {
+    font-size: 2.2rem;
+  }
 }
 
 .card {

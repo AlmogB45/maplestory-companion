@@ -37,6 +37,10 @@
   .eq-label {
     font-size: 0.55rem;
   }
+  .modal-content {
+    width: 95%;
+    max-width: 100%;
+  }
 }
 
 .eq-slot {
