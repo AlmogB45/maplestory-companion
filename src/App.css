@@ -330,3 +330,19 @@ body {
 .system-breakdown li {
   margin-bottom: 8px;
 }
+.select-input {
+  width: 130px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--card-border);
+  background: #0f1115;
+  color: white;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.checkbox-input {
+  width: 20px !important;
+  height: 20px !important;
+  cursor: pointer;
+}

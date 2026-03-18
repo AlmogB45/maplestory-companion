@@ -1,17 +1,20 @@
 // Basic heuristic calculator for estimating GMS Maplestory Combat Power / Stats
-export function calculateEstimatedCP(stats, wse, gearScores = { avgStarforce: 17, avgPotential: 15, avgFlameScore: 80 }) {
+export function calculateEstimatedCP(stats, wse, gearScores, systems) {
   // A very simplified mock formula to simulate CP generation based on GMS mechanics
-  // In reality, CP is an internal formula derived from HP, Main Stat, Attack, Damage, Boss, IED, etc.
   
   const baseStatFactor = stats.mainStat * 100;
   const attackFactor = wse.totalAttack * 500;
-  const damageFactor = 1 + (wse.damage + wse.bossDamage) / 100;
   
-  // IED has diminishing returns but is crucial for CP calculation against bosses
-  const iedMultiplier = wse.ied > 0 ? (wse.ied / 100) * 1.5 : 1;
+  // Include Familiars in damage
+  const totalBossDamage = wse.bossDamage + (systems?.familiarsBossDmg || 0);
+  const damageFactor = 1 + (wse.damage + totalBossDamage) / 100;
+  
+  // IED calculations (diminishing returns mathematically, simplified here)
+  const totalIED = Math.min(99, wse.ied + (systems?.familiarsIED || 0) * 0.5); // Simplified stacking
+  const iedMultiplier = totalIED > 0 ? (totalIED / 100) * 1.5 : 1;
 
   // Gear Modifiers
-  const starforceBonus = 1 + ((gearScores.avgStarforce - 10) * 0.05); // e.g. 17 SF = +35% multiplier to base
+  const starforceBonus = 1 + ((gearScores.avgStarforce - 10) * 0.05);
   const potentialBonus = 1 + (gearScores.avgPotential / 100); 
   const flameBonus = 1 + (gearScores.avgFlameScore / 1000); 
   
@@ -19,23 +22,37 @@ export function calculateEstimatedCP(stats, wse, gearScores = { avgStarforce: 17
   
   // Add a multiplier for arcane/sacred power for modern bosses
   const powerMultiplier = 1 + (stats.arcanePower / 1000) + (stats.sacredPower / 500);
-  
-  return Math.floor(estimatedCP * powerMultiplier);
+  estimatedCP *= powerMultiplier;
+
+  // Apply Systems & Buff Multipliers
+  if (systems) {
+    // V-Matrix Boost (max ~120% final damage on main skills)
+    const vMatrixBonus = 1 + (systems.vMatrixAvgLevel * 0.02);
+    estimatedCP *= vMatrixBonus;
+
+    // Hexa Matrix (Huge FD boost)
+    if (systems.hexaMatrixUnlocked) estimatedCP *= 1.30; 
+
+    // Guild Skills (Up to ~30% Boss/Crit/IED)
+    const guildSkillBonus = 1 + (systems.guildSkills * 0.01);
+    estimatedCP *= guildSkillBonus;
+
+    // Consumables / Potions
+    if (systems.potionsBuffs) estimatedCP *= 1.15; // 15% estimated FD from all pots/buffs combined
+  }
+
+  return Math.floor(estimatedCP);
 }
 
 export function canClearBoss(boss, playerStats, playerLevel, playerCP) {
   const levelDiff = playerLevel - boss.requiredLevel;
   
-  // Basic heuristic: 
-  // If player CP is >= boss required CP and Level >= required level, they can clear it.
-  // We can also return a difficulty rating: "Comfortable", "Struggle", "Impossible"
-  
   if (levelDiff < -5) {
-    return { clearable: false, status: 'Level too low', color: 'red' };
+    return { clearable: false, status: 'Level too low', color: '#f44336' };
   }
   
   if (boss.sacredPower && playerStats.sacredPower < boss.sacredPower) {
-    return { clearable: false, status: 'Not enough Sacred Power', color: 'red' };
+    return { clearable: false, status: 'Not enough Sacred Power', color: '#f44336' };
   }
   
   const cpRatio = playerCP / boss.requiredCP;
