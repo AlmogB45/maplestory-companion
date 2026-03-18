@@ -117,7 +117,11 @@ export default function EquipmentGrid({ onEquipmentChange }) {
             >
               {isEquipped ? (
                 <>
-                  <div className="eq-icon-small">{slot.icon}</div>
+                  <div className="eq-icon-small">
+                    {eqItem.base.itemId ? (
+                      <img src={`https://maplestory.io/api/GMS/250/item/${eqItem.base.itemId}/icon`} alt={eqItem.base.name} style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+                    ) : slot.icon}
+                  </div>
                   <div className="eq-name-small">{eqItem.base.name.split(' ')[0]}</div>
                   {eqItem.base.canStarforce && eqItem.stats.starforce > 0 && <div className="eq-stars">★{eqItem.stats.starforce}</div>}
                 </>
