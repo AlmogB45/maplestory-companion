@@ -26,39 +26,39 @@ const JOBS = [
 
 function App() {
   const [characterName, setCharacterName] = useState('')
-  const [level, setLevel] = useState(260)
+  const [level, setLevel] = useState(200)
   const [job, setJob] = useState('Hero')
   
   // Base Stats
   const [stats, setStats] = useState({
-    mainStat: 30000,
-    arcanePower: 1320,
-    sacredPower: 150
+    mainStat: 5000,
+    arcanePower: 0,
+    sacredPower: 0
   })
 
   // Weapon / Secondary / Emblem + General Modifiers
   const [wse, setWse] = useState({
-    totalAttack: 1500,
-    damage: 100,
-    bossDamage: 250,
-    ied: 93
+    totalAttack: 300,
+    damage: 10,
+    bossDamage: 0,
+    ied: 20
   })
 
-  // Gear Overrides (Starforce, Flames, Potential)
+  // Gear Overrides (Starforce, Flames, Potential) - Managed by EquipmentGrid
   const [gearScores, setGearScores] = useState({
-    avgStarforce: 17,
-    avgPotential: 15,
-    avgFlameScore: 80
+    avgStarforce: 0,
+    avgPotential: 0,
+    avgFlameScore: 0
   })
 
   // External Buffs & Systems
   const [systems, setSystems] = useState({
-    vMatrixAvgLevel: 60,
+    vMatrixAvgLevel: 0,
     hexaMatrixUnlocked: false,
-    guildSkills: 30, 
-    familiarsBossDmg: 30,
-    familiarsIED: 15,
-    potionsBuffs: true
+    guildSkills: 0, 
+    familiarsBossDmg: 0,
+    familiarsIED: 0,
+    potionsBuffs: false
   })
 
   const [combatPower, setCombatPower] = useState(0)
@@ -218,22 +218,6 @@ function App() {
             <div className="input-group">
               <label>Full Potions/Buffs <InfoIcon text="Includes MVP, Sparkling Red, Guild Blessing, Boss Rush, etc." /></label>
               <input type="checkbox" name="potionsBuffs" checked={systems.potionsBuffs} onChange={handleSystemChange} className="checkbox-input" />
-            </div>
-          </div>
-
-          <div className="card">
-            <h2><Settings2 size={20} color="#a855f7" /> Gear Averages</h2>
-            <div className="input-group">
-              <label>Avg Starforce <InfoIcon text="Look at your equipped items. If most are 17 stars, put 17." /></label>
-              <input type="number" name="avgStarforce" value={gearScores.avgStarforce} onChange={handleGearChange} />
-            </div>
-            <div className="input-group">
-              <label>Avg Potential % <InfoIcon text="Average Main Stat % per equip." /></label>
-              <input type="number" name="avgPotential" value={gearScores.avgPotential} onChange={handleGearChange} />
-            </div>
-            <div className="input-group">
-              <label>Avg Flame Score <InfoIcon text="An estimate of your bonus stats." /></label>
-              <input type="number" name="avgFlameScore" value={gearScores.avgFlameScore} onChange={handleGearChange} />
             </div>
           </div>
         </div>
