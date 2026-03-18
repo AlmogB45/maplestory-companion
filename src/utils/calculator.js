@@ -1,47 +1,55 @@
 // Basic heuristic calculator for estimating GMS Maplestory Combat Power / Stats
 export function calculateEstimatedCP(stats, wse, gearScores, systems) {
-  // A very simplified mock formula to simulate CP generation based on GMS mechanics
+  // A robust mock formula to simulate CP generation
   
-  const baseStatFactor = stats.mainStat * 100;
-  const attackFactor = wse.totalAttack * 500;
+  // 1. Base Stat Value (Main stat heavily weighted, assumed some secondary stat)
+  const statValue = (stats.mainStat * 4) + 2000; 
   
-  // Include Familiars in damage
+  // 2. Attack Value
+  const attackValue = wse.totalAttack;
+  
+  // 3. Damage Multipliers
   const totalBossDamage = wse.bossDamage + (systems?.familiarsBossDmg || 0);
-  const damageFactor = 1 + (wse.damage + totalBossDamage) / 100;
+  const damageFactor = 1 + ((wse.damage + totalBossDamage) / 100);
   
-  // IED calculations (diminishing returns mathematically, simplified here)
-  const totalIED = Math.min(99, wse.ied + (systems?.familiarsIED || 0) * 0.5); // Simplified stacking
-  const iedMultiplier = totalIED > 0 ? (totalIED / 100) * 1.5 : 1;
+  // 4. IED Calculation (CP scales exponentially with IED near 100%)
+  const totalIED = Math.min(99.9, wse.ied + (systems?.familiarsIED || 0) * 0.5); 
+  const iedMultiplier = 1 + (Math.pow(totalIED / 100, 3) * 2.5); // Boosts CP highly at 90%+ IED
 
-  // Gear Modifiers
-  const starforceBonus = 1 + ((gearScores.avgStarforce - 10) * 0.05);
+  // 5. Gear Modifiers
+  // Starforce gives massive base stats and attack. Let's represent it as an exponential multiplier past 10 stars.
+  const starforceBonus = 1 + ((gearScores.avgStarforce > 10 ? gearScores.avgStarforce - 10 : 0) * 0.08);
   const potentialBonus = 1 + (gearScores.avgPotential / 100); 
   const flameBonus = 1 + (gearScores.avgFlameScore / 1000); 
   
-  let estimatedCP = (baseStatFactor + attackFactor) * damageFactor * iedMultiplier * starforceBonus * potentialBonus * flameBonus;
+  // Raw damage estimation
+  let rawDamage = (statValue * attackValue * 0.01) * damageFactor * iedMultiplier * starforceBonus * potentialBonus * flameBonus;
   
-  // Add a multiplier for arcane/sacred power for modern bosses
+  // 6. AF / AUT Multiplier (Huge in modern GMS for area bosses)
   const powerMultiplier = 1 + (stats.arcanePower / 1000) + (stats.sacredPower / 500);
-  estimatedCP *= powerMultiplier;
+  rawDamage *= powerMultiplier;
 
-  // Apply Systems & Buff Multipliers
+  // 7. Apply Systems & Buff Multipliers (Final Damage essentially)
   if (systems) {
     // V-Matrix Boost (max ~120% final damage on main skills)
     const vMatrixBonus = 1 + (systems.vMatrixAvgLevel * 0.02);
-    estimatedCP *= vMatrixBonus;
+    rawDamage *= vMatrixBonus;
 
     // Hexa Matrix (Huge FD boost)
-    if (systems.hexaMatrixUnlocked) estimatedCP *= 1.30; 
+    if (systems.hexaMatrixUnlocked) rawDamage *= 1.30; 
 
     // Guild Skills (Up to ~30% Boss/Crit/IED)
     const guildSkillBonus = 1 + (systems.guildSkills * 0.01);
-    estimatedCP *= guildSkillBonus;
+    rawDamage *= guildSkillBonus;
 
     // Consumables / Potions
-    if (systems.potionsBuffs) estimatedCP *= 1.15; // 15% estimated FD from all pots/buffs combined
+    if (systems.potionsBuffs) rawDamage *= 1.15; // 15% estimated FD from all pots/buffs combined
   }
 
-  return Math.floor(estimatedCP);
+  // Multiply by a scalar to bring it in line with GMS visual CP numbers (usually 10M - 500M+)
+  const finalCP = rawDamage * 120;
+
+  return Math.floor(finalCP);
 }
 
 export function canClearBoss(boss, playerStats, playerLevel, playerCP) {

@@ -1,21 +1,23 @@
 import { useState, useEffect } from 'react'
+import { User, Activity, Settings2, ShieldCheck, Swords, Star, Info } from 'lucide-react'
 import './App.css'
 import { bosses } from './data/bosses'
 import { calculateEstimatedCP, canClearBoss } from './utils/calculator'
 import GearGuide from './components/GearGuide'
+import EquipmentGrid from './components/EquipmentGrid'
 
 // Tooltip Component
 const InfoIcon = ({ text }) => (
   <div className="tooltip-container">
-    <span className="info-icon">?</span>
+    <span className="info-icon"><Info size={11} /></span>
     <div className="tooltip-text">{text}</div>
   </div>
 )
 
 const JOBS = [
   "Hero", "Paladin", "Dark Knight", "Bowmaster", "Marksman", "Pathfinder", "Night Lord", "Bishop", "Ice/Lightning", "Fire/Poison", "Shadower", "Dual Blade", "Corsair", "Buccaneer", 
-  "Dawn Warrior", "Corsair", "Cannon Shooter", "Mihile", "Wind Archer", "Night Walker", "Thunder Breaker", "Striker", "Blaze Wizard", "Aran", "Evan", 
-  "Mercedes", "Aran", "Phantom", "Luminous", "Shade", "Eunwol", 
+  "Dawn Warrior", "Cannon Shooter", "Mihile", "Wind Archer", "Night Walker", "Thunder Breaker", "Striker", "Blaze Wizard", "Aran", "Evan", 
+  "Mercedes", "Phantom", "Luminous", "Shade", "Eunwol", 
   "Demon Slayer", "Demon Avenger", "Battle Mage", "Wild Hunter", "Mechanic", "Xenon", "Blaster",
   "Kaiser", "Kain", "Cadena", "Angelic Buster", 
   "Adele", "Illium", "Ark", "Hoyoung", "Zero", "Kinesis", 
@@ -53,10 +55,10 @@ function App() {
   const [systems, setSystems] = useState({
     vMatrixAvgLevel: 60,
     hexaMatrixUnlocked: false,
-    guildSkills: 0, // 0 to 45 (maxed all G skills)
-    familiarsBossDmg: 0,
-    familiarsIED: 0,
-    potionsBuffs: false
+    guildSkills: 30, 
+    familiarsBossDmg: 30,
+    familiarsIED: 15,
+    potionsBuffs: true
   })
 
   const [combatPower, setCombatPower] = useState(0)
@@ -99,8 +101,8 @@ function App() {
         <div className="input-section">
           
           <div className="card">
-            <h2>Character Info</h2>
-            <p className="card-desc">Note: GMS Rankings CORS restricts direct fetching in-browser, so please enter your info manually.</p>
+            <h2><User size={20} color="#3b82f6" /> Character Info</h2>
+            <p className="card-desc">Enter your core info manually for accurate modeling.</p>
             <div className="input-group">
               <label>IGN</label>
               <input value={characterName} onChange={(e) => setCharacterName(e.target.value)} placeholder="e.g. Mapler" />
@@ -130,7 +132,7 @@ function App() {
           </div>
 
           <div className="card">
-            <h2>WSE & General Modifiers</h2>
+            <h2><Swords size={20} color="#ef4444" /> WSE & Modifiers</h2>
             <div className="input-group">
               <label>Total Attack / M.Att <InfoIcon text="Combined raw Attack or Magic Attack from your Weapon, Secondary, and Emblem." /></label>
               <input type="number" name="totalAttack" value={wse.totalAttack} onChange={handleWseChange} />
@@ -150,7 +152,7 @@ function App() {
           </div>
 
           <div className="card">
-            <h2>Buffs & Systems</h2>
+            <h2><Activity size={20} color="#10b981" /> Buffs & Systems</h2>
             <p className="card-desc">External factors that massively boost your damage.</p>
             <div className="input-group">
               <label>5th Job V-Matrix Avg Lvl <InfoIcon text="Average level of your boost nodes (Max 60)." /></label>
@@ -179,7 +181,7 @@ function App() {
           </div>
 
           <div className="card">
-            <h2>Gear Averages</h2>
+            <h2><Settings2 size={20} color="#a855f7" /> Gear Averages</h2>
             <div className="input-group">
               <label>Avg Starforce <InfoIcon text="Look at your equipped items. If most are 17 stars, put 17." /></label>
               <input type="number" name="avgStarforce" value={gearScores.avgStarforce} onChange={handleGearChange} />
@@ -198,15 +200,17 @@ function App() {
         {/* Results Column */}
         <div className="results-section">
           <div className="card summary-card">
-            <h2>Estimated Combat Power (w/ Buffs)</h2>
+            <h2><Star size={24} color="#f59e0b" fill="#f59e0b" /> Estimated Combat Power</h2>
             <div className="cp-display">
               {combatPower.toLocaleString()} CP
             </div>
-            <p className="note">Note: This is a heuristic estimation including external buffs like Familiars and Guild Skills.</p>
+            <p className="note">Includes external buffs (Familiars, Guild Skills, Potions)</p>
           </div>
 
+          <EquipmentGrid />
+
           <div className="card">
-            <h2>Boss Clearability <InfoIcon text="Based on your Estimated CP, Level, and Sacred Power requirements." /></h2>
+            <h2><ShieldCheck size={20} color="#10b981" /> Boss Clearability</h2>
             <div className="boss-list">
               {bosses.map(boss => {
                 const result = canClearBoss(boss, stats, level, combatPower);
