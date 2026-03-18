@@ -89,6 +89,47 @@ function App() {
     setSystems(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : Number(value) }))
   }
 
+  const handleEquipmentGridChange = (newEq) => {
+    let totalStars = 0;
+    let totalPot = 0;
+    let totalFlame = 0;
+    let eqCount = 0;
+    let flameCount = 0;
+    
+    let totalBaseStat = 0;
+    let totalBaseAtt = 0;
+
+    Object.values(newEq).forEach(item => {
+      eqCount++;
+      totalStars += item.stats.starforce || 0;
+      totalPot += item.stats.potential || 0;
+      if (item.base.canFlame) {
+        totalFlame += item.stats.flame || 0;
+        flameCount++;
+      }
+      
+      if (item.base.base) {
+        totalBaseStat += item.base.base.stat || 0;
+        totalBaseAtt += item.base.base.attack || 0;
+      }
+    });
+
+    if (eqCount > 0) {
+      setGearScores({
+        avgStarforce: Math.round(totalStars / eqCount),
+        avgPotential: Math.round(totalPot / eqCount),
+        avgFlameScore: flameCount > 0 ? Math.round(totalFlame / flameCount) : 0
+      });
+      
+      // We can bump up the base stats slightly based on equipped items to simulate real growth
+      // Since it's a heuristic, we'll just add 10x the base stat and 5x the base attack as a rough representation
+      if (totalBaseStat > 0) {
+        setStats(prev => ({ ...prev, mainStat: 20000 + (totalBaseStat * 100) }));
+        setWse(prev => ({ ...prev, totalAttack: 1000 + (totalBaseAtt * 5) }));
+      }
+    }
+  }
+
   return (
     <div className="container">
       <header className="header">
@@ -207,7 +248,7 @@ function App() {
             <p className="note">Includes external buffs (Familiars, Guild Skills, Potions)</p>
           </div>
 
-          <EquipmentGrid />
+          <EquipmentGrid onEquipmentChange={handleEquipmentGridChange} />
 
           <div className="card">
             <h2><ShieldCheck size={20} color="#10b981" /> Boss Clearability</h2>
