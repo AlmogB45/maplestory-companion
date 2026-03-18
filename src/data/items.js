@@ -54,6 +54,7 @@ export const ITEMS = [
   { id: 'cht_pendant', name: 'Chaos Horntail Necklace', type: ITEM_TYPES.pendant, reqLevel: 120, base: { stat: 22, attack: 3 }, canStarforce: true, canFlame: true, canPotential: true },
   { id: 'machinator', name: 'Machinator Pendant', type: ITEM_TYPES.pendant, reqLevel: 120, base: { stat: 10, attack: 1 }, canStarforce: true, canFlame: true, canPotential: true },
   { id: 'dom_pendant', name: 'Dominator Pendant', type: ITEM_TYPES.pendant, reqLevel: 140, base: { stat: 20, attack: 3 }, canStarforce: true, canFlame: true, canPotential: true },
+  { id: 'cracked_gollux_pendant', name: 'Cracked Gollux Pendant', type: ITEM_TYPES.pendant, reqLevel: 120, base: { stat: 10, attack: 3 }, canStarforce: true, canFlame: true, canPotential: true },
   { id: 'solid_gollux_pendant', name: 'Solid Gollux Pendant', type: ITEM_TYPES.pendant, reqLevel: 130, base: { stat: 14, attack: 3 }, canStarforce: true, canFlame: true, canPotential: true },
   { id: 'reinforced_gollux_pendant', name: 'Reinforced Gollux Pendant', type: ITEM_TYPES.pendant, reqLevel: 140, base: { stat: 22, attack: 4 }, canStarforce: true, canFlame: true, canPotential: true },
   { id: 'sup_gollux_pendant', name: 'Superior Gollux Pendant', type: ITEM_TYPES.pendant, reqLevel: 150, base: { stat: 28, attack: 5 }, canStarforce: true, canFlame: true, canPotential: true },
@@ -63,6 +64,7 @@ export const ITEMS = [
   // Rings
   { id: 'silver_blossom', name: 'Silver Blossom Ring', type: ITEM_TYPES.ring, reqLevel: 110, base: { stat: 5, attack: 2 }, canStarforce: true, canFlame: false, canPotential: true },
   { id: 'noble_ifra', name: 'Noble Ifia\'s Ring', type: ITEM_TYPES.ring, reqLevel: 120, base: { stat: 5, attack: 2 }, canStarforce: true, canFlame: false, canPotential: true },
+  { id: 'cracked_gollux_ring', name: 'Cracked Gollux Ring', type: ITEM_TYPES.ring, reqLevel: 120, base: { stat: 4, attack: 2 }, canStarforce: true, canFlame: false, canPotential: true },
   { id: 'solid_gollux_ring', name: 'Solid Gollux Ring', type: ITEM_TYPES.ring, reqLevel: 130, base: { stat: 6, attack: 4 }, canStarforce: true, canFlame: false, canPotential: true },
   { id: 'reinforced_gollux_ring', name: 'Reinforced Gollux Ring', type: ITEM_TYPES.ring, reqLevel: 140, base: { stat: 8, attack: 5 }, canStarforce: true, canFlame: false, canPotential: true },
   { id: 'sup_gollux_ring', name: 'Superior Gollux Ring', type: ITEM_TYPES.ring, reqLevel: 150, base: { stat: 10, attack: 8 }, canStarforce: true, canFlame: false, canPotential: true },
@@ -86,6 +88,9 @@ export const ITEMS = [
   // Earring
   { id: 'dea_sidus', name: 'Dea Sidus Earring', type: ITEM_TYPES.earring, reqLevel: 130, base: { stat: 5, attack: 2 }, canStarforce: true, canFlame: true, canPotential: true },
   { id: 'meister_earring', name: 'Meister Earring', type: ITEM_TYPES.earring, reqLevel: 140, base: { stat: 15, attack: 4 }, canStarforce: true, canFlame: false, canPotential: true },
+  { id: 'cracked_gollux_earring', name: 'Cracked Gollux Earring', type: ITEM_TYPES.earring, reqLevel: 120, base: { stat: 8, attack: 3 }, canStarforce: true, canFlame: true, canPotential: true },
+  { id: 'solid_gollux_earring', name: 'Solid Gollux Earring', type: ITEM_TYPES.earring, reqLevel: 130, base: { stat: 10, attack: 3 }, canStarforce: true, canFlame: true, canPotential: true },
+  { id: 'reinforced_gollux_earring', name: 'Reinforced Gollux Earring', type: ITEM_TYPES.earring, reqLevel: 140, base: { stat: 12, attack: 4 }, canStarforce: true, canFlame: true, canPotential: true },
   { id: 'sup_gollux_earring', name: 'Superior Gollux Earring', type: ITEM_TYPES.earring, reqLevel: 150, base: { stat: 15, attack: 10 }, canStarforce: true, canFlame: true, canPotential: true },
   { id: 'estella_earring', name: 'Estella Earring', type: ITEM_TYPES.earring, reqLevel: 160, base: { stat: 40, attack: 5 }, canStarforce: true, canFlame: true, canPotential: true },
   { id: 'commanding_force', name: 'Commanding Force Earring', type: ITEM_TYPES.earring, reqLevel: 200, base: { stat: 50, attack: 15 }, canStarforce: true, canFlame: true, canPotential: true },
@@ -94,6 +99,9 @@ export const ITEMS = [
   { id: 'golden_clover', name: 'Golden Clover Belt', type: ITEM_TYPES.belt, reqLevel: 140, base: { stat: 15, attack: 1 }, canStarforce: true, canFlame: true, canPotential: true },
   { id: 'enraged_z_belt', name: 'Enraged Zakum Belt', type: ITEM_TYPES.belt, reqLevel: 150, base: { stat: 50, attack: 1 }, canStarforce: true, canFlame: true, canPotential: true },
   { id: 'tyrant_belt', name: 'Tyrant Belt', type: ITEM_TYPES.belt, reqLevel: 150, base: { stat: 50, attack: 30 }, canStarforce: true, canFlame: true, canPotential: true },
+  { id: 'cracked_gollux_belt', name: 'Cracked Gollux Belt', type: ITEM_TYPES.belt, reqLevel: 120, base: { stat: 10, attack: 3 }, canStarforce: true, canFlame: true, canPotential: true },
+  { id: 'solid_gollux_belt', name: 'Solid Gollux Belt', type: ITEM_TYPES.belt, reqLevel: 130, base: { stat: 14, attack: 3 }, canStarforce: true, canFlame: true, canPotential: true },
+  { id: 'reinforced_gollux_belt', name: 'Reinforced Gollux Belt', type: ITEM_TYPES.belt, reqLevel: 140, base: { stat: 22, attack: 4 }, canStarforce: true, canFlame: true, canPotential: true },
   { id: 'sup_gollux_belt', name: 'Superior Gollux Belt', type: ITEM_TYPES.belt, reqLevel: 150, base: { stat: 60, attack: 35 }, canStarforce: true, canFlame: true, canPotential: true },
   { id: 'dreamy_belt', name: 'Dreamy Belt', type: ITEM_TYPES.belt, reqLevel: 200, base: { stat: 50, attack: 15 }, canStarforce: true, canFlame: true, canPotential: true },
 
