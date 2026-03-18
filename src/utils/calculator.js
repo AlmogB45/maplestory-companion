@@ -1,5 +1,5 @@
 // Basic heuristic calculator for estimating GMS Maplestory Combat Power / Stats
-export function calculateEstimatedCP(stats, wse) {
+export function calculateEstimatedCP(stats, wse, gearScores = { avgStarforce: 17, avgPotential: 15, avgFlameScore: 80 }) {
   // A very simplified mock formula to simulate CP generation based on GMS mechanics
   // In reality, CP is an internal formula derived from HP, Main Stat, Attack, Damage, Boss, IED, etc.
   
@@ -9,8 +9,13 @@ export function calculateEstimatedCP(stats, wse) {
   
   // IED has diminishing returns but is crucial for CP calculation against bosses
   const iedMultiplier = wse.ied > 0 ? (wse.ied / 100) * 1.5 : 1;
+
+  // Gear Modifiers
+  const starforceBonus = 1 + ((gearScores.avgStarforce - 10) * 0.05); // e.g. 17 SF = +35% multiplier to base
+  const potentialBonus = 1 + (gearScores.avgPotential / 100); 
+  const flameBonus = 1 + (gearScores.avgFlameScore / 1000); 
   
-  let estimatedCP = (baseStatFactor + attackFactor) * damageFactor * iedMultiplier;
+  let estimatedCP = (baseStatFactor + attackFactor) * damageFactor * iedMultiplier * starforceBonus * potentialBonus * flameBonus;
   
   // Add a multiplier for arcane/sacred power for modern bosses
   const powerMultiplier = 1 + (stats.arcanePower / 1000) + (stats.sacredPower / 500);
@@ -36,12 +41,12 @@ export function canClearBoss(boss, playerStats, playerLevel, playerCP) {
   const cpRatio = playerCP / boss.requiredCP;
   
   if (cpRatio >= 2.0) {
-    return { clearable: true, status: 'Comfortable', color: 'green' };
+    return { clearable: true, status: 'Comfortable', color: '#4caf50' }; // green
   } else if (cpRatio >= 1.0) {
-    return { clearable: true, status: 'Doable', color: 'blue' };
+    return { clearable: true, status: 'Doable', color: '#2196f3' }; // blue
   } else if (cpRatio >= 0.7) {
-    return { clearable: true, status: 'Struggle (Requires Hands)', color: 'orange' };
+    return { clearable: true, status: 'Struggle (Hands)', color: '#ff9800' }; // orange
   } else {
-    return { clearable: false, status: 'Not enough CP', color: 'red' };
+    return { clearable: false, status: 'Not enough CP', color: '#f44336' }; // red
   }
 }

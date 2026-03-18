@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import { bosses } from './data/bosses'
 import { calculateEstimatedCP, canClearBoss } from './utils/calculator'
+import GearGuide from './components/GearGuide'
 
 function App() {
   const [characterName, setCharacterName] = useState('')
@@ -22,13 +23,21 @@ function App() {
     ied: 93
   })
 
+  // Gear Overrides (Starforce, Flames, Potential)
+  const [gearScores, setGearScores] = useState({
+    avgStarforce: 17,
+    avgPotential: 15,
+    avgFlameScore: 80
+  })
+
   const [combatPower, setCombatPower] = useState(0)
 
-  // Auto-calculate estimated CP when stats/wse change
+  // Auto-calculate estimated CP when stats/wse/gear change
   useEffect(() => {
-    const estimated = calculateEstimatedCP(stats, wse)
+    // Injecting gear scores into the CP calculator heuristic
+    const estimated = calculateEstimatedCP(stats, wse, gearScores)
     setCombatPower(estimated)
-  }, [stats, wse])
+  }, [stats, wse, gearScores])
 
   const handleStatChange = (e) => {
     const { name, value } = e.target;
@@ -38,6 +47,11 @@ function App() {
   const handleWseChange = (e) => {
     const { name, value } = e.target;
     setWse(prev => ({ ...prev, [name]: Number(value) }))
+  }
+
+  const handleGearChange = (e) => {
+    const { name, value } = e.target;
+    setGearScores(prev => ({ ...prev, [name]: Number(value) }))
   }
 
   return (
@@ -73,6 +87,22 @@ function App() {
             <div className="input-group">
               <label>Sacred Power (AUT)</label>
               <input type="number" name="sacredPower" value={stats.sacredPower} onChange={handleStatChange} />
+            </div>
+          </div>
+
+          <div className="card">
+            <h2>Gear Details</h2>
+            <div className="input-group">
+              <label>Avg Starforce</label>
+              <input type="number" name="avgStarforce" value={gearScores.avgStarforce} onChange={handleGearChange} />
+            </div>
+            <div className="input-group">
+              <label>Avg Potential (Main Stat %)</label>
+              <input type="number" name="avgPotential" value={gearScores.avgPotential} onChange={handleGearChange} />
+            </div>
+            <div className="input-group">
+              <label>Avg Flame Score</label>
+              <input type="number" name="avgFlameScore" value={gearScores.avgFlameScore} onChange={handleGearChange} />
             </div>
           </div>
 
@@ -128,6 +158,8 @@ function App() {
               })}
             </div>
           </div>
+
+          <GearGuide />
         </div>
       </div>
     </div>

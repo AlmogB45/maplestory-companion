@@ -113,3 +113,41 @@
 .boss-status {
   font-size: 1.1rem;
 }
+
+.guide-content h3 {
+  color: #ffaa00;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-size: 1.1rem;
+}
+
+.guide-content p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #ddd;
+  margin-top: 0;
+}
+
+.system-breakdown {
+  margin-top: 25px;
+  background: #222;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #ffaa00;
+}
+
+.system-breakdown h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.system-breakdown ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+.system-breakdown li {
+  margin-bottom: 8px;
+}
