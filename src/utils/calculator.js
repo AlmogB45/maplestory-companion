@@ -1,53 +1,63 @@
 // Basic heuristic calculator for estimating GMS Maplestory Combat Power / Stats
-export function calculateEstimatedCP(stats, wse, gearScores, systems) {
-  // A robust mock formula to simulate CP generation
+export function calculateEstimatedCP(stats, wse, gearScores, systems, hyperStats = { damage: 0, bossDamage: 0, critDamage: 0, ied: 0, mainStat: 0 }, equipmentStats = { stat: 0, attack: 0, potential: 0, starforce: 0 }) {
+  // Base stat from naked character + hyper stats + raw equip stats
+  const rawFlatStat = stats.mainStat + (hyperStats.mainStat * 30) + equipmentStats.stat;
   
-  // 1. Base Stat Value (Main stat heavily weighted, assumed some secondary stat)
-  const statValue = (stats.mainStat * 4) + 2000; 
+  // Total Stat = Raw Stat * (1 + Potential % / 100)
+  const totalStat = rawFlatStat * (1 + (equipmentStats.potential / 100));
   
-  // 2. Attack Value
-  const attackValue = wse.totalAttack;
+  // Total Attack
+  const totalAttack = wse.totalAttack + equipmentStats.attack;
   
-  // 3. Damage Multipliers
-  const totalBossDamage = wse.bossDamage + (systems?.familiarsBossDmg || 0);
-  const damageFactor = 1 + ((wse.damage + totalBossDamage) / 100);
+  // Damage Multipliers
+  const totalBossDamage = wse.bossDamage + (systems?.familiarsBossDmg || 0) + (hyperStats.bossDamage * 3.5);
+  const totalDamage = wse.damage + (hyperStats.damage * 3);
+  const damageFactor = 1 + ((totalDamage + totalBossDamage) / 100);
   
-  // 4. IED Calculation (CP scales exponentially with IED near 100%)
-  const totalIED = Math.min(99.9, wse.ied + (systems?.familiarsIED || 0) * 0.5); 
-  const iedMultiplier = 1 + (Math.pow(totalIED / 100, 3) * 2.5); // Boosts CP highly at 90%+ IED
+  // IED Calculation (Diminishing returns)
+  let iedSources = [
+    wse.ied, 
+    (systems?.familiarsIED || 0), 
+    (hyperStats.ied * 3)
+  ].filter(v => v > 0);
+  
+  let totalIED = 0;
+  let remainingDef = 1;
+  iedSources.forEach(source => {
+    remainingDef *= (1 - (source / 100));
+  });
+  totalIED = (1 - remainingDef) * 100;
+  
+  // IED multiplier for CP heavily weights reaching 90%+
+  const iedMultiplier = 1 + (Math.pow(totalIED / 100, 3) * 2.5);
 
-  // 5. Gear Modifiers
-  // Starforce gives massive base stats and attack. Let's represent it as an exponential multiplier past 10 stars.
-  const starforceBonus = 1 + ((gearScores.avgStarforce > 10 ? gearScores.avgStarforce - 10 : 0) * 0.08);
-  const potentialBonus = 1 + (gearScores.avgPotential / 100); 
-  const flameBonus = 1 + (gearScores.avgFlameScore / 1000); 
+  // Crit Multiplier (Crit Rate * Crit Damage)
+  const critRate = Math.min(100, stats.critRate || 100); // assume 100 if missing
+  const totalCritDamage = (stats.critDamage || 50) + (hyperStats.critDamage * 1);
+  const critMultiplier = 1 + ((critRate / 100) * (totalCritDamage / 100));
+
+  // Starforce multiplier (Exponential scaling on CP)
+  const starforceBonus = 1 + (equipmentStats.starforce * 0.005); 
   
   // Raw damage estimation
-  let rawDamage = (statValue * attackValue * 0.01) * damageFactor * iedMultiplier * starforceBonus * potentialBonus * flameBonus;
+  let rawDamage = (totalStat * 4) * (totalAttack * 0.01) * damageFactor * iedMultiplier * critMultiplier * starforceBonus;
   
-  // 6. AF / AUT Multiplier (Huge in modern GMS for area bosses)
+  // AF / AUT Multiplier 
   const powerMultiplier = 1 + (stats.arcanePower / 1000) + (stats.sacredPower / 500);
   rawDamage *= powerMultiplier;
 
-  // 7. Apply Systems & Buff Multipliers (Final Damage essentially)
+  // Apply Systems & Buff Multipliers (Final Damage essentially)
   if (systems) {
-    // V-Matrix Boost (max ~120% final damage on main skills)
     const vMatrixBonus = 1 + (systems.vMatrixAvgLevel * 0.02);
     rawDamage *= vMatrixBonus;
-
-    // Hexa Matrix (Huge FD boost)
     if (systems.hexaMatrixUnlocked) rawDamage *= 1.30; 
-
-    // Guild Skills (Up to ~30% Boss/Crit/IED)
     const guildSkillBonus = 1 + (systems.guildSkills * 0.01);
     rawDamage *= guildSkillBonus;
-
-    // Consumables / Potions
-    if (systems.potionsBuffs) rawDamage *= 1.15; // 15% estimated FD from all pots/buffs combined
+    if (systems.potionsBuffs) rawDamage *= 1.15; 
   }
 
-  // Multiply by a scalar to bring it in line with GMS visual CP numbers (usually 10M - 500M+)
-  const finalCP = rawDamage * 120;
+  // Multiply by a scalar to bring it in line with GMS visual CP numbers
+  const finalCP = rawDamage * 15;
 
   return Math.floor(finalCP);
 }

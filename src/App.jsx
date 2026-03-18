@@ -29,16 +29,27 @@ function App() {
   const [level, setLevel] = useState(200)
   const [job, setJob] = useState('Hero')
   
-  // Base Stats
+  // Base Stats (Naked)
   const [stats, setStats] = useState({
-    mainStat: 5000,
+    mainStat: 2000,
     arcanePower: 0,
-    sacredPower: 0
+    sacredPower: 0,
+    critRate: 100,
+    critDamage: 50
+  })
+
+  // Hyper Stats
+  const [hyperStats, setHyperStats] = useState({
+    damage: 0,
+    bossDamage: 0,
+    critDamage: 0,
+    ied: 0,
+    mainStat: 0
   })
 
   // Weapon / Secondary / Emblem + General Modifiers
   const [wse, setWse] = useState({
-    totalAttack: 300,
+    totalAttack: 100,
     damage: 10,
     bossDamage: 0,
     ied: 20
@@ -49,6 +60,13 @@ function App() {
     avgStarforce: 0,
     avgPotential: 0,
     avgFlameScore: 0
+  })
+
+  const [equipmentStats, setEquipmentStats] = useState({
+    stat: 0,
+    attack: 0,
+    potential: 0,
+    starforce: 0
   })
 
   // External Buffs & Systems
@@ -65,9 +83,9 @@ function App() {
 
   // Auto-calculate estimated CP when stats change
   useEffect(() => {
-    const estimated = calculateEstimatedCP(stats, wse, gearScores, systems)
+    const estimated = calculateEstimatedCP(stats, wse, gearScores, systems, hyperStats, equipmentStats)
     setCombatPower(estimated)
-  }, [stats, wse, gearScores, systems])
+  }, [stats, wse, gearScores, systems, hyperStats, equipmentStats])
 
   const handleStatChange = (e) => {
     const { name, value } = e.target;
@@ -87,6 +105,11 @@ function App() {
   const handleSystemChange = (e) => {
     const { name, value, type, checked } = e.target;
     setSystems(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : Number(value) }))
+  }
+
+  const handleHyperStatChange = (e) => {
+    const { name, value } = e.target;
+    setHyperStats(prev => ({ ...prev, [name]: Number(value) }))
   }
 
   const handleEquipmentGridChange = (newEq) => {
@@ -121,12 +144,15 @@ function App() {
         avgFlameScore: flameCount > 0 ? Math.round(totalFlame / flameCount) : 0
       });
       
-      // We can bump up the base stats slightly based on equipped items to simulate real growth
-      // Since it's a heuristic, we'll just add 10x the base stat and 5x the base attack as a rough representation
-      if (totalBaseStat > 0) {
-        setStats(prev => ({ ...prev, mainStat: 20000 + (totalBaseStat * 100) }));
-        setWse(prev => ({ ...prev, totalAttack: 1000 + (totalBaseAtt * 5) }));
-      }
+      setEquipmentStats({
+        stat: totalBaseStat + totalFlame,
+        attack: totalBaseAtt,
+        potential: totalPot,
+        starforce: totalStars
+      });
+    } else {
+      setGearScores({ avgStarforce: 0, avgPotential: 0, avgFlameScore: 0 });
+      setEquipmentStats({ stat: 0, attack: 0, potential: 0, starforce: 0 });
     }
   }
 
@@ -142,8 +168,8 @@ function App() {
         <div className="input-section">
           
           <div className="card">
-            <h2><User size={20} color="#3b82f6" /> Character Info</h2>
-            <p className="card-desc">Enter your core info manually for accurate modeling.</p>
+            <h2><User size={20} color="#3b82f6" /> Base Stats (Naked)</h2>
+            <p className="card-desc">Your stats with NO equipment on (from AP, Legion, Link Skills).</p>
             <div className="input-group">
               <label>IGN</label>
               <input value={characterName} onChange={(e) => setCharacterName(e.target.value)} placeholder="e.g. Mapler" />
@@ -159,8 +185,16 @@ function App() {
               <input type="number" value={level} onChange={(e) => setLevel(Number(e.target.value))} />
             </div>
             <div className="input-group">
-              <label>Main Stat <InfoIcon text="Your class's primary stat (e.g. STR, DEX) excluding % increases from buffs." /></label>
+              <label>Base Main Stat <InfoIcon text="Your naked primary stat before % increases." /></label>
               <input type="number" name="mainStat" value={stats.mainStat} onChange={handleStatChange} />
+            </div>
+            <div className="input-group">
+              <label>Base Crit Rate % <InfoIcon text="Your crit rate without gear." /></label>
+              <input type="number" name="critRate" value={stats.critRate} onChange={handleStatChange} max="100" />
+            </div>
+            <div className="input-group">
+              <label>Base Crit Damage % <InfoIcon text="Your crit damage without gear." /></label>
+              <input type="number" name="critDamage" value={stats.critDamage} onChange={handleStatChange} />
             </div>
             <div className="input-group">
               <label>Arcane Power (AF)</label>
@@ -173,21 +207,45 @@ function App() {
           </div>
 
           <div className="card">
-            <h2><Swords size={20} color="#ef4444" /> WSE & Modifiers</h2>
+            <h2><Activity size={20} color="#f59e0b" /> Hyper Stats</h2>
             <div className="input-group">
-              <label>Total Attack / M.Att <InfoIcon text="Combined raw Attack or Magic Attack from your Weapon, Secondary, and Emblem." /></label>
+              <label>Damage (Level) <InfoIcon text="Hyper stat level for Damage." /></label>
+              <input type="number" name="damage" value={hyperStats.damage} onChange={handleHyperStatChange} max="15" />
+            </div>
+            <div className="input-group">
+              <label>Boss Damage (Level)</label>
+              <input type="number" name="bossDamage" value={hyperStats.bossDamage} onChange={handleHyperStatChange} max="15" />
+            </div>
+            <div className="input-group">
+              <label>Crit Damage (Level)</label>
+              <input type="number" name="critDamage" value={hyperStats.critDamage} onChange={handleHyperStatChange} max="15" />
+            </div>
+            <div className="input-group">
+              <label>IED (Level)</label>
+              <input type="number" name="ied" value={hyperStats.ied} onChange={handleHyperStatChange} max="15" />
+            </div>
+            <div className="input-group">
+              <label>Main Stat (Level)</label>
+              <input type="number" name="mainStat" value={hyperStats.mainStat} onChange={handleHyperStatChange} max="15" />
+            </div>
+          </div>
+
+          <div className="card">
+            <h2><Swords size={20} color="#ef4444" /> Offensive Base (Skills/Links)</h2>
+            <div className="input-group">
+              <label>Base Attack / M.Att <InfoIcon text="Base attack from skills, legion, titles." /></label>
               <input type="number" name="totalAttack" value={wse.totalAttack} onChange={handleWseChange} />
             </div>
             <div className="input-group">
-              <label>Damage % <InfoIcon text="Found in your Stat UI under 'Damage'." /></label>
+              <label>Base Damage % <InfoIcon text="Damage from links/legion." /></label>
               <input type="number" name="damage" value={wse.damage} onChange={handleWseChange} />
             </div>
             <div className="input-group">
-              <label>Boss Damage % <InfoIcon text="Found in your Stat UI under 'Boss Damage'." /></label>
+              <label>Base Boss Damage %</label>
               <input type="number" name="bossDamage" value={wse.bossDamage} onChange={handleWseChange} />
             </div>
             <div className="input-group">
-              <label>IED % <InfoIcon text="Ignore Enemy Defense. Crucial for bosses! (Max 100)" /></label>
+              <label>Base IED %</label>
               <input type="number" name="ied" value={wse.ied} onChange={handleWseChange} max="100" />
             </div>
           </div>
