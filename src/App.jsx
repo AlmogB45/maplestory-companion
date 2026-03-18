@@ -4,9 +4,18 @@ import { bosses } from './data/bosses'
 import { calculateEstimatedCP, canClearBoss } from './utils/calculator'
 import GearGuide from './components/GearGuide'
 
+// Tooltip Component
+const InfoIcon = ({ text }) => (
+  <div className="tooltip-container">
+    <span className="info-icon">?</span>
+    <div className="tooltip-text">{text}</div>
+  </div>
+)
+
 function App() {
   const [characterName, setCharacterName] = useState('')
   const [level, setLevel] = useState(260)
+  const [isFetching, setIsFetching] = useState(false)
   
   // Base Stats
   const [stats, setStats] = useState({
@@ -34,7 +43,6 @@ function App() {
 
   // Auto-calculate estimated CP when stats/wse/gear change
   useEffect(() => {
-    // Injecting gear scores into the CP calculator heuristic
     const estimated = calculateEstimatedCP(stats, wse, gearScores)
     setCombatPower(estimated)
   }, [stats, wse, gearScores])
@@ -54,30 +62,61 @@ function App() {
     setGearScores(prev => ({ ...prev, [name]: Number(value) }))
   }
 
+  // Simulate an API Fetch (GMS lacks an open API for full stats currently)
+  const handleFetch = async () => {
+    if (!characterName) return;
+    setIsFetching(true);
+    
+    // Simulate network delay
+    await new Promise(r => setTimeout(r, 1500));
+    
+    // Simulated data fetching (In the future, this could hook into Nexon API or maplestory.gg)
+    alert(`GMS API currently doesn't provide open access to detailed gear/CP stats. Simulated fetch for "${characterName}" completed! (Updated Level and AF/AUT)`);
+    
+    setLevel(Math.floor(Math.random() * (285 - 200 + 1)) + 200); // Random level 200-285
+    setStats(prev => ({ ...prev, arcanePower: 1320, sacredPower: 200 }));
+    setIsFetching(false);
+  }
+
   return (
     <div className="container">
-      <h1>🍁 MapleStory Companion (GMS)</h1>
-      <p>Measure your character based on CP, Stats, Equips, and Skills!</p>
+      <header className="header">
+        <h1>🍁 MapleStory Companion</h1>
+        <p>A simple, intuitive way to measure your character for GMS</p>
+      </header>
       
       <div className="layout-grid">
         {/* Input Column */}
         <div className="input-section">
+          
+          <div className="card hero-card">
+            <h2>Character Search</h2>
+            <div className="search-box">
+              <input 
+                className="search-input"
+                value={characterName} 
+                onChange={(e) => setCharacterName(e.target.value)} 
+                placeholder="Enter your IGN..." 
+              />
+              <button 
+                className="fetch-btn" 
+                onClick={handleFetch} 
+                disabled={isFetching || !characterName}
+              >
+                {isFetching ? 'Searching...' : 'Auto-Fill Stats'}
+              </button>
+            </div>
+            <p className="helper-text">Currently, official GMS API access is limited. Manual input is recommended for precise calculations.</p>
+          </div>
+
           <div className="card">
             <h2>Character Info</h2>
-            <div className="input-group">
-              <label>Name</label>
-              <input value={characterName} onChange={(e) => setCharacterName(e.target.value)} placeholder="e.g. Mapler" />
-            </div>
             <div className="input-group">
               <label>Level</label>
               <input type="number" value={level} onChange={(e) => setLevel(Number(e.target.value))} />
             </div>
-          </div>
-
-          <div className="card">
-            <h2>Core Stats</h2>
             <div className="input-group">
-              <label>Main Stat</label>
+              <label>Main Stat <InfoIcon text="Your class's primary stat (e.g. STR, DEX) excluding % increases from buffs." /></label>
               <input type="number" name="mainStat" value={stats.mainStat} onChange={handleStatChange} />
             </div>
             <div className="input-group">
@@ -91,37 +130,39 @@ function App() {
           </div>
 
           <div className="card">
-            <h2>Gear Details</h2>
+            <h2>Gear Averages</h2>
+            <p className="card-desc">Estimate your current gear tier to adjust the multiplier.</p>
             <div className="input-group">
-              <label>Avg Starforce</label>
+              <label>Avg Starforce <InfoIcon text="Look at your equipped items. If most are 17 stars, put 17. If mostly 21, put 21." /></label>
               <input type="number" name="avgStarforce" value={gearScores.avgStarforce} onChange={handleGearChange} />
             </div>
             <div className="input-group">
-              <label>Avg Potential (Main Stat %)</label>
+              <label>Avg Potential % <InfoIcon text="Average Main Stat % per equip. If you have 15% on most gear, put 15." /></label>
               <input type="number" name="avgPotential" value={gearScores.avgPotential} onChange={handleGearChange} />
             </div>
             <div className="input-group">
-              <label>Avg Flame Score</label>
+              <label>Avg Flame Score <InfoIcon text="An estimate of your bonus stats. Usually 80-120 per item for mid/late game." /></label>
               <input type="number" name="avgFlameScore" value={gearScores.avgFlameScore} onChange={handleGearChange} />
             </div>
           </div>
 
           <div className="card">
-            <h2>WSE & Multipliers</h2>
+            <h2>WSE (Weapon, Secondary, Emblem)</h2>
+            <p className="card-desc">These 3 items give the biggest boost to your character.</p>
             <div className="input-group">
-              <label>Total Attack / M.Attack</label>
+              <label>Total Attack <InfoIcon text="Combined raw Attack or Magic Attack from your Weapon, Secondary, and Emblem." /></label>
               <input type="number" name="totalAttack" value={wse.totalAttack} onChange={handleWseChange} />
             </div>
             <div className="input-group">
-              <label>Damage %</label>
+              <label>Damage % <InfoIcon text="Found in your Stat UI under 'Damage'." /></label>
               <input type="number" name="damage" value={wse.damage} onChange={handleWseChange} />
             </div>
             <div className="input-group">
-              <label>Boss Damage %</label>
+              <label>Boss Damage % <InfoIcon text="Found in your Stat UI under 'Boss Damage'." /></label>
               <input type="number" name="bossDamage" value={wse.bossDamage} onChange={handleWseChange} />
             </div>
             <div className="input-group">
-              <label>Ignore Enemy Def (IED) %</label>
+              <label>IED % <InfoIcon text="Ignore Enemy Defense. Crucial for bosses! (Max 100)" /></label>
               <input type="number" name="ied" value={wse.ied} onChange={handleWseChange} max="100" />
             </div>
           </div>
@@ -134,11 +175,11 @@ function App() {
             <div className="cp-display">
               {combatPower.toLocaleString()} CP
             </div>
-            <p className="note">Note: This is an estimated heuristic based on your inputs.</p>
+            <p className="note">Note: This is a heuristic estimation. Actual GMS CP may differ slightly.</p>
           </div>
 
           <div className="card">
-            <h2>Boss Clearability</h2>
+            <h2>Boss Clearability <InfoIcon text="Based on your Estimated CP, Level, and Sacred Power requirements." /></h2>
             <div className="boss-list">
               {bosses.map(boss => {
                 const result = canClearBoss(boss, stats, level, combatPower);
@@ -149,7 +190,7 @@ function App() {
                       <span className="boss-diff">[{boss.difficulty}]</span>
                     </div>
                     <div className="boss-status">
-                      <span style={{ color: result.color, fontWeight: 'bold' }}>
+                      <span className={`status-badge`} style={{ backgroundColor: result.color }}>
                         {result.status}
                       </span>
                     </div>
