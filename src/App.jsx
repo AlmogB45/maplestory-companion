@@ -303,7 +303,7 @@ function App() {
                       {boss.mobId && (
                         <div style={{ width: '40px', height: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                           <img 
-                            src={`https://maplestory.io/api/GMS/250/mob/${boss.mobId}/render/stand`} 
+                            src={`https://maplestory.io/api/GMS/250/mob/${boss.mobId}/icon`} 
                             alt={boss.name} 
                             style={{ maxWidth: '40px', maxHeight: '40px', objectFit: 'contain' }} 
                           />

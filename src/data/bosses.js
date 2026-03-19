@@ -10,7 +10,7 @@ export const bosses = [
   },
   {
     id: 'lomien',
-    mobId: 8240096,
+    mobId: 8240104,
     name: 'Lotus & Damien',
     difficulty: 'Normal',
     requiredLevel: 220,
@@ -19,7 +19,7 @@ export const bosses = [
   },
   {
     id: 'lucid_hard',
-    mobId: 8880150,
+    mobId: 8880140,
     name: 'Lucid',
     difficulty: 'Hard',
     requiredLevel: 235,
@@ -37,7 +37,7 @@ export const bosses = [
   },
   {
     id: 'cgloom',
-    mobId: 8641012,
+    mobId: 8644650,
     name: 'Chaos Gloom',
     difficulty: 'Chaos',
     requiredLevel: 255,
@@ -46,7 +46,7 @@ export const bosses = [
   },
   {
     id: 'hdarknell',
-    mobId: 8643012,
+    mobId: 8645009,
     name: 'Hard Darknell',
     difficulty: 'Hard',
     requiredLevel: 255,
@@ -64,7 +64,7 @@ export const bosses = [
   },
   {
     id: 'seren_normal',
-    mobId: 8880602,
+    mobId: 8880600,
     name: 'Seren',
     difficulty: 'Normal',
     requiredLevel: 265,
@@ -74,7 +74,7 @@ export const bosses = [
   },
   {
     id: 'kalos_normal',
-    mobId: 8880803,
+    mobId: 8880800,
     name: 'Kalos',
     difficulty: 'Normal',
     requiredLevel: 270,
