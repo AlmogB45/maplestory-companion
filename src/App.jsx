@@ -79,13 +79,21 @@ function App() {
     potionsBuffs: false
   })
 
+  // Utility Skills
+  const [utilities, setUtilities] = useState({
+    hasBind: false,
+    hasIframe: false,
+    hasDoor: false,
+    hasBurst: false
+  })
+
   const [combatPower, setCombatPower] = useState(0)
 
   // Auto-calculate estimated CP when stats change
   useEffect(() => {
-    const estimated = calculateEstimatedCP(stats, wse, gearScores, systems, hyperStats, equipmentStats)
+    const estimated = calculateEstimatedCP(stats, wse, gearScores, systems, hyperStats, equipmentStats, utilities)
     setCombatPower(estimated)
-  }, [stats, wse, gearScores, systems, hyperStats, equipmentStats])
+  }, [stats, wse, gearScores, systems, hyperStats, equipmentStats, utilities])
 
   const handleStatChange = (e) => {
     const { name, value } = e.target;
@@ -110,6 +118,11 @@ function App() {
   const handleHyperStatChange = (e) => {
     const { name, value } = e.target;
     setHyperStats(prev => ({ ...prev, [name]: Number(value) }))
+  }
+
+  const handleUtilityChange = (e) => {
+    const { name, checked } = e.target;
+    setUtilities(prev => ({ ...prev, [name]: checked }))
   }
 
   const handleEquipmentGridChange = (newEq) => {
@@ -278,6 +291,27 @@ function App() {
               <input type="checkbox" name="potionsBuffs" checked={systems.potionsBuffs} onChange={handleSystemChange} className="checkbox-input" />
             </div>
           </div>
+
+          <div className="card">
+            <h2><ShieldCheck size={20} color="#3b82f6" /> Utility & Job Skills</h2>
+            <p className="card-desc">These tools significantly improve boss clear rates.</p>
+            <div className="input-group">
+              <label>Has Bind <InfoIcon text="Do you have a skill to freeze the boss? (e.g. Erda Nova)" /></label>
+              <input type="checkbox" name="hasBind" checked={utilities.hasBind} onChange={handleUtilityChange} className="checkbox-input" />
+            </div>
+            <div className="input-group">
+              <label>Has iFrame <InfoIcon text="Invincibility skills to dodge fatal attacks." /></label>
+              <input type="checkbox" name="hasIframe" checked={utilities.hasIframe} onChange={handleUtilityChange} className="checkbox-input" />
+            </div>
+            <div className="input-group">
+              <label>Has Door / Extra Life <InfoIcon text="Skills like Heaven's Door or Sacrosanctity to revive." /></label>
+              <input type="checkbox" name="hasDoor" checked={utilities.hasDoor} onChange={handleUtilityChange} className="checkbox-input" />
+            </div>
+            <div className="input-group">
+              <label>High Burst <InfoIcon text="Does your job rely on a massive 2-3 minute burst cycle? (Increases clear leeway)" /></label>
+              <input type="checkbox" name="hasBurst" checked={utilities.hasBurst} onChange={handleUtilityChange} className="checkbox-input" />
+            </div>
+          </div>
         </div>
 
         {/* Results Column */}
@@ -296,14 +330,14 @@ function App() {
             <h2><ShieldCheck size={20} color="#10b981" /> Boss Clearability</h2>
             <div className="boss-list">
               {bosses.map(boss => {
-                const result = canClearBoss(boss, stats, level, combatPower);
+                const result = canClearBoss(boss, stats, level, combatPower, utilities);
                 return (
                   <div key={boss.id} className="boss-item">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       {boss.mobId && (
                         <div style={{ width: '40px', height: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                           <img 
-                            src={`https://maplestory.io/api/GMS/250/mob/${boss.mobId}/icon`} 
+                            src={`https://maplestory.io/api/GMS/250/mob/${boss.mobId}/render/stand`} 
                             alt={boss.name} 
                             style={{ maxWidth: '40px', maxHeight: '40px', objectFit: 'contain' }} 
                           />

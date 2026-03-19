@@ -62,7 +62,7 @@ export function calculateEstimatedCP(stats, wse, gearScores, systems, hyperStats
   return Math.floor(finalCP);
 }
 
-export function canClearBoss(boss, playerStats, playerLevel, playerCP) {
+export function canClearBoss(boss, playerStats, playerLevel, playerCP, utilities) {
   const levelDiff = playerLevel - boss.requiredLevel;
   
   if (levelDiff < -5) {
@@ -73,7 +73,18 @@ export function canClearBoss(boss, playerStats, playerLevel, playerCP) {
     return { clearable: false, status: 'Not enough Sacred Power', color: '#f44336' };
   }
   
-  const cpRatio = playerCP / boss.requiredCP;
+  let effectiveCP = playerCP;
+  
+  // Apply Utility factors (hands/survivability)
+  // These make clearing easier by effectively lowering the barrier of entry
+  if (utilities) {
+    if (utilities.hasBind) effectiveCP *= 1.1; // Bind allows free burst
+    if (utilities.hasIframe) effectiveCP *= 1.15; // Iframes allow surviving fatal patterns
+    if (utilities.hasDoor) effectiveCP *= 1.1; // Extra lives = more time to deal damage
+    if (utilities.hasBurst) effectiveCP *= 1.2; // High burst = easier phase skips
+  }
+
+  const cpRatio = effectiveCP / boss.requiredCP;
   
   if (cpRatio >= 2.0) {
     return { clearable: true, status: 'Comfortable', color: '#4caf50' }; // green
