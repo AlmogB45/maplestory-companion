@@ -1,6 +1,7 @@
 export const bosses = [
   {
     id: 'cra',
+    mobId: 8930000,
     name: 'Chaos Root Abyss (CRA)',
     difficulty: 'Normal',
     requiredLevel: 210,
@@ -9,6 +10,7 @@ export const bosses = [
   },
   {
     id: 'lomien',
+    mobId: 8240096,
     name: 'Lotus & Damien',
     difficulty: 'Normal',
     requiredLevel: 220,
@@ -17,6 +19,7 @@ export const bosses = [
   },
   {
     id: 'lucid_hard',
+    mobId: 8880150,
     name: 'Lucid',
     difficulty: 'Hard',
     requiredLevel: 235,
@@ -25,6 +28,7 @@ export const bosses = [
   },
   {
     id: 'will_hard',
+    mobId: 8880302,
     name: 'Will',
     difficulty: 'Hard',
     requiredLevel: 235,
@@ -33,6 +37,7 @@ export const bosses = [
   },
   {
     id: 'cgloom',
+    mobId: 8641012,
     name: 'Chaos Gloom',
     difficulty: 'Chaos',
     requiredLevel: 255,
@@ -41,6 +46,7 @@ export const bosses = [
   },
   {
     id: 'hdarknell',
+    mobId: 8643012,
     name: 'Hard Darknell',
     difficulty: 'Hard',
     requiredLevel: 255,
@@ -49,6 +55,7 @@ export const bosses = [
   },
   {
     id: 'bmag_hard',
+    mobId: 8880502,
     name: 'Black Mage',
     difficulty: 'Hard',
     requiredLevel: 255,
@@ -57,6 +64,7 @@ export const bosses = [
   },
   {
     id: 'seren_normal',
+    mobId: 8880602,
     name: 'Seren',
     difficulty: 'Normal',
     requiredLevel: 265,
@@ -66,6 +74,7 @@ export const bosses = [
   },
   {
     id: 'kalos_normal',
+    mobId: 8880803,
     name: 'Kalos',
     difficulty: 'Normal',
     requiredLevel: 270,

@@ -299,9 +299,20 @@ function App() {
                 const result = canClearBoss(boss, stats, level, combatPower);
                 return (
                   <div key={boss.id} className="boss-item">
-                    <div className="boss-info">
-                      <span className="boss-name">{boss.name}</span>
-                      <span className="boss-diff">[{boss.difficulty}]</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      {boss.mobId && (
+                        <div style={{ width: '40px', height: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                          <img 
+                            src={`https://maplestory.io/api/GMS/250/mob/${boss.mobId}/render/stand`} 
+                            alt={boss.name} 
+                            style={{ maxWidth: '40px', maxHeight: '40px', objectFit: 'contain' }} 
+                          />
+                        </div>
+                      )}
+                      <div className="boss-info">
+                        <span className="boss-name">{boss.name}</span>
+                        <span className="boss-diff">[{boss.difficulty}]</span>
+                      </div>
                     </div>
                     <div className="boss-status">
                       <span className={`status-badge`} style={{ backgroundColor: result.color }}>
